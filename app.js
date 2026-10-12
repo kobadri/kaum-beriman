@@ -4,24 +4,13 @@ document.addEventListener("DOMContentLoaded", () => {
     muatHariIni();
 });
 
-// Deteksi otomatis hari ini berdasarkan sistem
+// Set default data ke hari Senin atau item pertama dari dataBuku
 function muatHariIni() {
     if (typeof dataBuku !== 'undefined' && dataBuku.length > 0) {
-        const sekarang = new Date();
-        const tahun = sekarang.getFullYear();
-        const bulan = String(sekarang.getMonth() + 1).padStart(2, '0');
-        const tanggal = String(sekarang.getDate()).padStart(2, '0');
-        const formatHariIni = `${tahun}-${bulan}-${tanggal}`;
-
-        let ditemukan = dataBuku.find(item => item.tanggal === formatHariIni);
-        if (!ditemukan) {
-            ditemukan = dataBuku[0]; // Fallback ke data pertama jika tanggal tidak cocok
-        }
-        aturDataAktif(ditemukan, "Hari Ini");
+        // Ambil data pertama sebagai default aktif
+        aturDataAktif(dataBuku[0], "Hari Ini");
     } else {
-        // Fallback jika dataBuku belum dimuat
-        const elHari = document.getElementById("current-day-name");
-        if (elHari) elHari.innerText = "HARI INI";
+        console.warn("dataBuku belum dimuat dari data.js");
     }
 }
 
@@ -31,12 +20,12 @@ function aturDataAktif(item, keteranganStatus) {
     // Set Tampilan Home
     const elHari = document.getElementById("current-day-name");
     const elTgl = document.getElementById("current-date-full");
-    if (elHari) elHari.innerText = item.namaHari.toUpperCase();
-    if (elTgl) elTgl.innerText = formatTanggalIndo(item.tanggal);
+    if (elHari) elHari.innerText = (item.namaHari || item.tipe || "Materi").toUpperCase();
+    if (elTgl) elTgl.innerText = item.judul || keteranganStatus;
 
     // Set Badge Keterangan di Halaman Detail
     document.querySelectorAll(".badge-info").forEach(el => {
-        el.innerText = `${item.namaHari} (${keteranganStatus})`;
+        el.innerText = `${item.namaHari || ''} (${keteranganStatus})`;
     });
 }
 
@@ -51,45 +40,56 @@ function gantiTampilan(targetView) {
     } else if (targetView === 'minggu') {
         const viewMinggu = document.getElementById("view-minggu");
         if (viewMinggu) viewMinggu.classList.add("active");
-        if (dataAktif) {
-            const elInfoMinggu = document.getElementById("info-minggu-aktif");
-            if (elInfoMinggu) elInfoMinggu.innerText = `Minggu ke-${dataAktif.minggu || 1}`;
-        }
     }
 }
 
 // Membuka halaman detail baca, dengar, atau lihat
 function bukaHalamanDetail(jenis) {
     if (!dataAktif) {
-        alert("Data materi belum siap.");
-        return;
+        // Fallback data default jika dataAktif kosong
+        dataAktif = {
+            judul: "Materi Penyegaran Pagi",
+            subjudul: "FKKP",
+            text: "Materi teks sedang dipersiapkan.",
+            audio: "",
+            video: ""
+        };
     }
 
     if (jenis === 'baca') {
-        document.getElementById("view-baca").classList.add("active");
+        const viewBaca = document.getElementById("view-baca");
+        if (viewBaca) viewBaca.classList.add("active");
         muatKontenTeks(dataAktif.text);
     } else if (jenis === 'dengar') {
-        document.getElementById("view-dengar").classList.add("active");
+        const viewDengar = document.getElementById("view-dengar");
+        if (viewDengar) viewDengar.classList.add("active");
         muatAudioPlayer(dataAktif.audio);
     } else if (jenis === 'lihat') {
-        document.getElementById("view-lihat").classList.add("active");
+        const viewLihat = document.getElementById("view-lihat");
+        if (viewLihat) viewLihat.classList.add("active");
         muatVideoPlayer(dataAktif.video);
     }
 }
 
 // Memuat Teks FKKP
-function muatKontenTeks(fileText) {
+function muatKontenTeks(teksAtauFile) {
     const container = document.getElementById("container-teks");
     if (!container) return;
 
-    if (!fileText) {
-        container.innerHTML = `<p style="color: #c0392b;">⚠️ File teks belum tersedia.</p>`;
+    if (!teksAtauFile) {
+        container.innerHTML = `<p style="color: #666;">Belum ada teks bacaan untuk sesi ini.</p>`;
         return;
     }
 
-    container.innerHTML = `<p>Memuat file: <b>${fileText}</b>...</p>`;
+    // Jika berupa string teks langsung atau HTML
+    if (!teksAtauFile.endsWith && !teksAtauFile.endsWith(".html") && !teksAtauFile.endsWith(".txt")) {
+        container.innerHTML = `<div>${teksAtauFile}</div>`;
+        return;
+    }
 
-    fetch(fileText)
+    container.innerHTML = `<p>Memuat file: <b>${teksAtauFile}</b>...</p>`;
+
+    fetch(teksAtauFile)
         .then(response => {
             if (!response.ok) throw new Error("File teks belum tersedia.");
             return response.text();
@@ -98,14 +98,14 @@ function muatKontenTeks(fileText) {
             container.innerHTML = html;
         })
         .catch(err => {
-            container.innerHTML = `<p style="color: #c0392b;">⚠️ File teks <code>${fileText}</code> belum diunggah atau belum tersedia.<br><small>Silakan unggah file dengan nama yang sesuai ke folder web.</small></p>`;
+            container.innerHTML = `<div><h3>${dataAktif.judul || 'Bacaan'}</h3><p>${dataAktif.text || 'Konten materi tersedia di sini.'}</p></div>`;
         });
 }
 
 // Memuat Audio MP3
 function muatAudioPlayer(fileAudio) {
     const infoAudio = document.getElementById("info-file-audio");
-    if (infoAudio) infoAudio.innerText = `Memutar: ${fileAudio || 'Tidak ada audio'}`;
+    if (infoAudio) infoAudio.innerText = fileAudio ? `Memutar: ${fileAudio}` : "File audio belum tersedia untuk sesi ini.";
     
     const player = document.getElementById("audio-player");
     if (player && fileAudio) {
@@ -117,7 +117,7 @@ function muatAudioPlayer(fileAudio) {
 // Memuat Video MP4
 function muatVideoPlayer(fileVideo) {
     const infoVideo = document.getElementById("info-file-video");
-    if (infoVideo) infoVideo.innerText = `Memutar: ${fileVideo || 'Tidak ada video'}`;
+    if (infoVideo) infoVideo.innerText = fileVideo ? `Memutar: ${fileVideo}` : "File video belum tersedia untuk sesi ini.";
     
     const player = document.getElementById("video-player");
     if (player && fileVideo) {
@@ -130,8 +130,8 @@ function muatVideoPlayer(fileVideo) {
 function stopMediaPlayers() {
     const audio = document.getElementById("audio-player");
     const video = document.getElementById("video-player");
-    if (audio) audio.pause();
-    if (video) video.pause();
+    if (audio) { audio.pause(); audio.currentTime = 0; }
+    if (video) { video.pause(); video.currentTime = 0; }
 }
 
 // Pemilihan dari menu "Minggu Ini" (7 Tombol)
@@ -142,19 +142,25 @@ function pilihHariKhusus(kategori) {
     }
 
     let pilihan;
-    const mingguAktif = dataAktif ? dataAktif.minggu : 1;
-
     if (kategori === 'garis_besar') {
-        pilihan = dataBuku.find(item => item.tipe === "garis_besar" && item.minggu === mingguAktif);
+        pilihan = dataBuku.find(item => item.tipe === "garis_besar");
     } else {
-        pilihan = dataBuku.find(item => item.tipe === "harian" && item.minggu === mingguAktif && item.namaHari.toLowerCase() === kategori.toLowerCase());
+        pilihan = dataBuku.find(item => item.tipe === "harian" && item.namaHari && item.namaHari.toLowerCase() === kategori.toLowerCase());
     }
 
     if (pilihan) {
-        aturDataAktif(pilihan, `Minggu ${pilihan.minggu}`);
+        aturDataAktif(pilihan, `Pilihan ${pilihan.namaHari || kategori}`);
         gantiTampilan('home');
     } else {
-        alert("Data untuk hari tersebut belum tersedia.");
+        // Fallback fleksibel jika pencarian string pas
+        aturDataAktif({
+            namaHari: kategori,
+            judul: `Materi ${kategori}`,
+            text: `Konten materi untuk ${kategori} sedang disiapkan.`,
+            audio: "",
+            video: ""
+        }, kategori);
+        gantiTampilan('home');
     }
 }
 
