@@ -1,4 +1,3 @@
-cd ~/mini-web
 echo 'const appContainer = document.getElementById("app");' > app.js
 echo 'function renderMenuUtama() {' >> app.js
 echo '    if (!appContainer) return;' >> app.js
