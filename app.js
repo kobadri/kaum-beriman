@@ -1,58 +1,78 @@
-const appContainer = document.getElementById("app");
+let dataAktif = null;
 
-function renderMenuUtama() {
-    if (!appContainer) return;
-    appContainer.innerHTML = `
-        <div class="card">
-            <div class="header-title">Penyegaran Pagi — FKKP</div>
-            <div class="sub-header">Pilih Materi Minggu Ini</div>
-            <p style="color: #666; margin-bottom: 20px; font-size: 0.9rem;">Silakan pilih hari atau garis besar</p>
-            <div class="menu-list">
-                <button class="btn-menu garis-besar" onclick="renderHalaman('garis_besar')">📄 Garis Besar Minggu Ini</button>
-                <button class="btn-menu senin" onclick="renderHalaman('Senin')">Senin</button>
-                <button class="btn-menu selasa" onclick="renderHalaman('Selasa')">Selasa</button>
-                <button class="btn-menu rabu" onclick="renderHalaman('Rabu')">Rabu</button>
-                <button class="btn-menu kamis" onclick="renderHalaman('Kamis')">Kamis</button>
-                <button class="btn-menu jumat" onclick="renderHalaman('Jumat')">Jumat</button>
-                <button class="btn-menu sabtu" onclick="renderHalaman('Sabtu')">Sabtu</button>
-            </div>
-            <div class="footer-nav" style="margin-top: 20px;">
-                <button class="btn-footer btn-primary" onclick="renderMenuUtama()">⭐ HARI INI</button>
-            </div>
-        </div>
-    `;
+document.addEventListener("DOMContentLoaded", () => {
+    if (typeof dataBuku !== 'undefined' && dataBuku.length > 0) {
+        aturDataAktif(dataBuku[0], "Hari Ini");
+    }
+});
+
+function aturDataAktif(item, keterangan) {
+    dataAktif = item;
+    const elHari = document.getElementById("current-day-name");
+    const elTgl = document.getElementById("current-date-full");
+    if (elHari) elHari.innerText = (item.namaHari || "SENIN").toUpperCase();
+    if (elTgl) elTgl.innerText = item.tanggal || keterangan;
+
+    document.querySelectorAll(".badge-info").forEach(el => {
+        el.innerText = `${item.namaHari || ''} (${keterangan})`;
+    });
 }
 
-function renderHalaman(key) {
-    if (!appContainer) return;
-
-    if (typeof dataPenyegaran !== 'undefined' && dataPenyegaran[key]) {
-        const item = dataPenyegaran[key];
-        appContainer.innerHTML = `
-            <div class="card">
-                <div class="header-title">${item.judul || key}</div>
-                <div class="sub-header">${item.subjudul || ''}</div>
-                <div class="content-body" style="text-align: left; margin: 20px 0; line-height: 1.6;">
-                    ${item.isi || '<p>Materi sedang disiapkan.</p>'}
-                </div>
-                <div class="footer-nav">
-                    <button class="btn-footer btn-primary" onclick="renderMenuUtama()">🏠 Menu Utama</button>
-                </div>
-            </div>
-        `;
-    } else {
-        appContainer.innerHTML = `
-            <div class="card">
-                <div class="header-title">Materi ${key}</div>
-                <p style="margin: 20px 0;">Halaman untuk materi <strong>${key}</strong> berhasil dibuka.</p>
-                <div class="footer-nav">
-                    <button class="btn-footer btn-primary" onclick="renderMenuUtama()">🏠 Kembali ke Menu Utama</button>
-                </div>
-            </div>
-        `;
+function gantiTampilan(targetView) {
+    document.querySelectorAll(".page-view").forEach(el => el.classList.remove("active"));
+    const target = document.getElementById(`view-${targetView}`);
+    if (target) {
+        target.classList.add("active");
+    }
+    if (targetView === 'home') {
+        const audio = document.getElementById("audio-player");
+        const video = document.getElementById("video-player");
+        if (audio) { audio.pause(); audio.currentTime = 0; }
+        if (video) { video.pause(); video.currentTime = 0; }
     }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    renderMenuUtama();
-});
+function bukaHalamanDetail(jenis) {
+    const data = dataAktif || {
+        judul: "Materi FKKP",
+        text: "Konten bacaan belum tersedia.",
+        audio: "",
+        video: ""
+    };
+
+    if (jenis === 'baca') {
+        document.getElementById("view-baca").classList.add("active");
+        const container = document.getElementById("container-teks");
+        if (container) {
+            container.innerHTML = `<p>${data.text || 'Bacaan FKKP'}</p>`;
+        }
+    } else if (jenis === 'dengar') {
+        document.getElementById("view-dengar").classList.add("active");
+        const info = document.getElementById("info-file-audio");
+        const player = document.getElementById("audio-player");
+        if (info) info.innerText = data.audio ? `Memutar: ${data.audio}` : "File audio belum tersedia.";
+        if (player && data.audio) {
+            player.src = data.audio;
+            player.load();
+        }
+    } else if (jenis === 'lihat') {
+        document.getElementById("view-lihat").classList.add("active");
+        const info = document.getElementById("info-file-video");
+        const player = document.getElementById("video-player");
+        if (info) info.innerText = data.video ? `Memutar: ${data.video}` : "File video belum tersedia.";
+        if (player && data.video) {
+            player.src = data.video;
+            player.load();
+        }
+    }
+}
+
+function pilihHariKhusus(kategori) {
+    if (typeof dataBuku !== 'undefined') {
+        let pilihan = dataBuku.find(item => item.namaHari && item.namaHari.toLowerCase() === kategori.toLowerCase());
+        if (pilihan) {
+            aturDataAktif(pilihan, pilihan.tanggal);
+        }
+    }
+    gantiTampilan('home');
+}
