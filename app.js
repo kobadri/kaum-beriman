@@ -26,7 +26,6 @@ function renderMenuUtama() {
 function renderHalaman(key) {
     if (!appContainer) return;
 
-    // Jika data materi dari data.js tersedia
     if (typeof dataPenyegaran !== 'undefined' && dataPenyegaran[key]) {
         const item = dataPenyegaran[key];
         appContainer.innerHTML = `
@@ -42,7 +41,6 @@ function renderHalaman(key) {
             </div>
         `;
     } else {
-        // Tampilan default jika data materi belum terisi penuh
         appContainer.innerHTML = `
             <div class="card">
                 <div class="header-title">Materi ${key}</div>
