@@ -23,7 +23,6 @@ function renderMenuUtama() {
     `;
 }
 
-// Jalankan menu utama saat halaman dimuat
 document.addEventListener("DOMContentLoaded", () => {
     renderMenuUtama();
 });
