@@ -11,33 +11,44 @@
 </head>
 <body>
   <header class="topbar">
-    <div class="brand-mark" aria-hidden="true">KB</div>
-    <div class="brand-copy"><p class="eyebrow">PANDUAN BACAAN HARIAN</p><h1>Penyegaran Pagi - FKKP</h1></div>
+    <div class="brand-mark" aria-hidden="true">FKKP</div>
+    <div class="brand-copy">
+      <p class="eyebrow">PANDUAN BACAAN HARIAN</p>
+      <h1>Penyegaran Pagi - FKKP</h1>
+    </div>
     <button class="admin-link" id="adminLink" type="button">Admin</button>
   </header>
+
   <main class="page">
     <section class="welcome">
       <p class="eyebrow">PROGRAM 12 PEKAN</p>
       <h2>Penyegaran Pagi - FKKP</h2>
       <p>Buka bacaan sesuai tanggal hari ini, atau pilih pekan bacaan yang ingin dibaca.</p>
+
       <div class="today-row">
         <div class="today-copy">
           <span class="today-label">HARI INI</span>
           <strong id="todayDate" class="today-date" aria-live="polite">Memuat tanggal…</strong>
-          <span class="today-hint">Buka bacaan hari ini</span>
+          <span id="todayHint" class="today-hint">Tekan tombol bulat untuk membuka bacaan</span>
         </div>
-        <button class="today-button" id="todayButton" type="button" aria-label="Buka bacaan hari ini" title="Buka bacaan hari ini">
-          <span aria-hidden="true">→</span>
+        <button class="today-button" id="todayButton" type="button"
+          aria-label="Buka bacaan hari ini" title="Buka bacaan hari ini">
+          <span class="calendar-icon" aria-hidden="true">↗</span>
         </button>
       </div>
       <p id="todayMessage" class="today-message" aria-live="polite"></p>
+
       <div class="week-select">
         <label for="weekSelect">Pekan bacaan</label>
         <select id="weekSelect" aria-label="Pilih pekan bacaan"></select>
       </div>
     </section>
-    <section class="reading-section">
-      <div class="section-heading"><div><p class="eyebrow">MATERI PEKAN INI</p><h2 id="weekHeading">Pekan Bacaan 1</h2></div><span class="week-pill" id="weekPill">01 / 12</span></div>
+
+    <section class="reading-section" id="readingList">
+      <div class="section-heading">
+        <div><p class="eyebrow">MATERI PEKAN INI</p><h2 id="weekHeading">Pekan Bacaan 1</h2></div>
+        <span class="week-pill" id="weekPill">01 / 12</span>
+      </div>
       <button class="outline-card garis-card" id="garisButton" type="button">
         <span class="book-icon" aria-hidden="true">✦</span>
         <span class="card-copy"><strong>Garis Besar</strong><small>Persiapan bacaan Senin–Sabtu</small></span>
@@ -45,19 +56,27 @@
       </button>
       <div class="day-grid" id="dayGrid"></div>
     </section>
+
     <section class="reading-view" id="readingView" hidden aria-live="polite">
-      <div class="reading-top"><button id="backButton" class="back-button" type="button">← Semua bacaan</button><span class="week-pill" id="readingWeekLabel">Pekan 1</span></div>
-      <div class="reading-title-row"><div><p class="eyebrow" id="readingKicker">PEKAN BACAAN 1</p><h2 id="readingTitle">Garis Besar</h2></div>
+      <div class="reading-top">
+        <button id="backButton" class="back-button" type="button">← Semua bacaan</button>
+        <span class="week-pill" id="readingWeekLabel">Pekan 1</span>
+      </div>
+      <div class="reading-title-row">
+        <div><p class="eyebrow" id="readingKicker">PEKAN BACAAN 1</p><h2 id="readingTitle">Garis Besar</h2></div>
         <div class="zoom-controls" aria-label="Ukuran teks bacaan">
-          <button id="zoomOut" type="button" aria-label="Perkecil teks" title="Perkecil teks">A−</button>
+          <button id="zoomOut" type="button" aria-label="Perkecil teks">A−</button>
           <span id="zoomPercent" aria-live="polite">100%</span>
-          <button id="zoomIn" type="button" aria-label="Perbesar teks" title="Perbesar teks">A+</button>
-          <button id="zoomReset" type="button" aria-label="Kembalikan ukuran teks" title="Ukuran normal">Reset</button>
+          <button id="zoomIn" type="button" aria-label="Perbesar teks">A+</button>
+          <button id="zoomReset" type="button" aria-label="Kembalikan ukuran teks">Reset</button>
         </div>
       </div>
-      <div class="article-content" id="articleContent"><p>Materi untuk bagian ini belum diterbitkan.</p></div>
+      <div class="article-content" id="articleContent">
+        <p>Materi untuk bagian ini belum dimasukkan.</p>
+      </div>
       <div class="media-area" id="mediaArea"></div>
     </section>
+
     <footer><span>Penyegaran Pagi - FKKP</span><span>12 pekan · Senin–Sabtu + Garis Besar</span></footer>
   </main>
   <script src="./app.js"></script>
