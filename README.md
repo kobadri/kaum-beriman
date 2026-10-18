@@ -1,34 +1,17 @@
-# Kaum Beriman (1) — kerangka awal
+# Penyegaran Pagi - FKKP
 
-Aplikasi PWA awal untuk program bacaan 12 pekan.
+Paket perbaikan antarmuka untuk repositori GitHub Pages `kaum-beriman`.
 
-## Aturan isi
-- Tidak ada menu atau judul “Minggu”.
-- “Garis Besar” adalah bagian khusus untuk menyiapkan bacaan Senin–Sabtu.
-- Ada 12 Garis Besar dan 72 bacaan harian (12 × 6).
+## Berkas yang diganti
+- `index.html`
+- `app.js`
+- `styles.css`
+- `service-worker.js`
 
-## Berkas
-- `index.html`: halaman anggota, dengan kontrol ukuran teks A−/A+ pada area bacaan; tata letak utama tetap responsif terhadap layar.
-- `admin.html`: kerangka Admin Editor.
-- `styles.css`, `app.js`: tampilan dan perilaku halaman anggota.
-- `manifest.webmanifest`, `service-worker.js`: fondasi PWA.
-
-## Penting: status saat ini
-Ini adalah kerangka frontend untuk memulai proyek, belum aplikasi produksi.
-- Konten bacaan belum diimpor.
-- Tombol simpan draf menyimpan data teks di browser lokal saja.
-- Pemilihan PDF/audio/video hanya memilih berkas di browser; belum mengunggah ke server.
-- Pratinjau terbitkan hanya membuka pratinjau, belum menerbitkan ke anggota.
-- Login admin, database, penyimpanan media, serta analitik perlu dihubungkan ke backend (misalnya Supabase) sebelum digunakan sungguhan.
-- Ukuran teks bacaan dapat diubah melalui A−/A+ tanpa memperbesar seluruh tata letak aplikasi. Zoom bawaan browser tetap tidak diblokir demi aksesibilitas.
-- Jangan memasukkan kredensial rahasia ke kode frontend.
-
-## Publikasi GitHub Pages
-1. Unggah semua berkas dan folder proyek ini ke root repositori `kobadri/kaum-beriman`.
-2. Buka **Settings → Pages**.
-3. Pada bagian **Build and deployment**, pilih **Deploy from a branch**.
-4. Pilih branch `main` dan folder `/(root)`, lalu tekan **Save**.
-5. Tunggu deployment selesai pada tab **Actions**.
-
-## Materi audio
-Simpan materi di folder `media/` setelah diunggah, atau gunakan penyimpanan media terpisah. Nama berkas yang sudah ada dapat dipertahankan, misalnya `S_01_Senin.mp3`.
+## Catatan penting
+- Program dihitung mulai Senin, 5 Oktober 2026, untuk 12 pekan.
+- Tombol HARI INI membuka bacaan Senin–Sabtu; pada hari Minggu membuka Garis Besar pekan berikutnya jika tersedia.
+- Konten teks belum dimasukkan. Audio akan dicoba dari folder `media/` dengan pola nama `S_01_Senin.mp3`, `S_01_garis_besar.mp3`, dan seterusnya.
+- Berkas audio harus berada di folder `media/` dengan nama yang cocok.
+- `admin.html` dan `manifest.webmanifest` yang sudah ada di repositori tidak perlu diganti.
+- Setelah unggah, lakukan muat ulang paksa (Ctrl+Shift+R) atau tutup lalu buka kembali situs agar cache lama tidak dipakai.
