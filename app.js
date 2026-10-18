@@ -1,147 +1,45 @@
 (() => {
-  "use strict";
-
-  const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-  const START = new Date(2026, 9, 5); // 5 Oktober 2026, waktu lokal
-  const WEEKS = 12;
-  const $ = (selector) => document.querySelector(selector);
-  const dayGrid = $("#dayGrid");
-  const weekSelect = $("#weekSelect");
-  let selectedWeek = 1;
-  let zoom = 100;
-
-  function localMidnight(date) {
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  }
-
-  function dayDifference(a, b) {
-    return Math.round((localMidnight(a).getTime() - localMidnight(b).getTime()) / 86400000);
-  }
-
-  function formatDate(date) {
-    return new Intl.DateTimeFormat("id-ID", {
-      weekday: "long", day: "numeric", month: "long", year: "numeric"
-    }).format(date);
-  }
-
-  function fileBase(week, key) {
-    const number = String(week).padStart(2, "0");
-    return `media/S_${number}_${key}.mp3`;
-  }
-
-  function renderWeek(week) {
-    selectedWeek = Math.max(1, Math.min(WEEKS, Number(week) || 1));
-    weekSelect.value = String(selectedWeek);
-    $("#weekHeading").textContent = `Pekan Bacaan ${selectedWeek}`;
-    $("#weekPill").textContent = `${String(selectedWeek).padStart(2, "0")} / ${WEEKS}`;
-    dayGrid.replaceChildren();
-
-    DAYS.forEach((day, index) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "day-card";
-      button.innerHTML = `<span class="day-number">${String(index + 1).padStart(2, "0")}</span>
-        <span><strong>${day}</strong><br><small>Bacaan harian</small></span>`;
-      button.addEventListener("click", () => openReading(selectedWeek, day, fileBase(selectedWeek, day)));
-      dayGrid.appendChild(button);
-    });
-  }
-
-  function openReading(week, title, mediaPath, isOutline = false) {
-    $("#readingList").hidden = true;
-    $(".welcome").hidden = true;
-    $("#readingView").hidden = false;
-    $("#readingWeekLabel").textContent = `Pekan ${week}`;
-    $("#readingKicker").textContent = `PEKAN BACAAN ${week}`;
-    $("#readingTitle").textContent = title;
-    $("#articleContent").innerHTML = `<p>Materi teks untuk <strong>${title}</strong>, Pekan Bacaan ${week}, belum dimasukkan ke aplikasi.</p>
-      <p>Jika berkas audio asli sudah diunggah ke folder <code>media</code> dengan nama yang sesuai, audio dapat diputar di bawah.</p>`;
-    $("#mediaArea").replaceChildren();
-
-    const audio = document.createElement("audio");
-    audio.controls = true;
-    audio.preload = "none";
-    audio.src = mediaPath;
-    audio.addEventListener("error", () => {
-      if (audio.parentNode) {
-        const note = document.createElement("p");
-        note.className = "media-note";
-        note.textContent = "Audio belum tersedia pada alamat ini. Pastikan berkas audio diunggah ke folder media dengan nama yang sesuai.";
-        $("#mediaArea").appendChild(note);
-      }
-    }, { once: true });
-    $("#mediaArea").appendChild(audio);
-    applyZoom();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function backToList() {
-    $("#readingView").hidden = true;
-    $("#readingList").hidden = false;
-    $(".welcome").hidden = false;
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }
-
-  function openToday() {
-    const today = localMidnight(new Date());
-    const offset = dayDifference(today, START);
-    const message = $("#todayMessage");
-    message.textContent = "";
-
-    if (offset < 0) {
-      message.textContent = "Program belum dimulai. Bacaan pertama dimulai Senin, 5 Oktober 2026.";
-      return;
-    }
-
-    const calendarWeek = Math.floor(offset / 7) + 1;
-    const dayOfWeek = offset % 7;
-
-    if (calendarWeek > WEEKS || (calendarWeek === WEEKS && dayOfWeek === 6)) {
-      message.textContent = "Program 12 pekan telah selesai. Silakan pilih pekan bacaan yang ingin dibuka.";
-      return;
-    }
-
-    if (dayOfWeek === 6) {
-      const nextWeek = calendarWeek + 1;
-      if (nextWeek > WEEKS) {
-        message.textContent = "Program 12 pekan telah selesai. Silakan pilih pekan bacaan yang ingin dibuka.";
-        return;
-      }
-      renderWeek(nextWeek);
-      openReading(nextWeek, "Garis Besar", fileBase(nextWeek, "garis_besar"), true);
-      return;
-    }
-
-    renderWeek(calendarWeek);
-    const day = DAYS[dayOfWeek];
-    openReading(calendarWeek, day, fileBase(calendarWeek, day));
-  }
-
-  function applyZoom() {
-    $("#articleContent").style.fontSize = `${16 * zoom / 100}px`;
-    $("#articleContent").style.lineHeight = zoom >= 140 ? "1.95" : "1.8";
-    $("#zoomPercent").textContent = `${zoom}%`;
-    $("#zoomOut").disabled = zoom <= 80;
-    $("#zoomIn").disabled = zoom >= 180;
-  }
-
-  for (let week = 1; week <= WEEKS; week++) {
-    const option = document.createElement("option");
-    option.value = String(week);
-    option.textContent = `Pekan Bacaan ${week}`;
-    weekSelect.appendChild(option);
-  }
-
-  $("#todayDate").textContent = formatDate(new Date());
-  renderWeek(1);
-  $("#todayButton").addEventListener("click", openToday);
-  $("#weekSelect").addEventListener("change", () => renderWeek(weekSelect.value));
-  $("#garisButton").addEventListener("click", () =>
-    openReading(selectedWeek, "Garis Besar", fileBase(selectedWeek, "garis_besar"), true));
-  $("#backButton").addEventListener("click", backToList);
-  $("#zoomOut").addEventListener("click", () => { zoom = Math.max(80, zoom - 10); applyZoom(); });
-  $("#zoomIn").addEventListener("click", () => { zoom = Math.min(180, zoom + 10); applyZoom(); });
-  $("#zoomReset").addEventListener("click", () => { zoom = 100; applyZoom(); });
-  $("#adminLink").addEventListener("click", () => { window.location.href = "./admin.html"; });
-  applyZoom();
+"use strict";
+const DAYS=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"], START=new Date(2026,9,5), WEEKS=12;
+const $=s=>document.querySelector(s), weekSelect=$("#weekSelect"), dayGrid=$("#dayGrid"), homeView=$("#homeView"), listView=$("#listView"), readingView=$("#readingView"), articleContent=$("#articleContent");
+let currentWeek=1, readingZoom=100;
+const midnight=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const diff=(a,b)=>Math.round((midnight(a)-midnight(b))/86400000);
+const formatDate=d=>new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(d);
+function todayTarget(now=new Date()){
+ const offset=diff(now,START); if(offset<0)return{status:"before"};
+ const wi=Math.floor(offset/7), di=offset%7; if(wi>=WEEKS)return{status:"after"};
+ if(di===6)return wi+1<WEEKS?{status:"outline",week:wi+2}:{status:"after"};
+ return{status:"day",week:wi+1,day:di};
+}
+function updateToday(){
+ const now=new Date(), target=todayTarget(now); $("#todayDate").textContent=formatDate(now);
+ const msg=$("#todayMessage");
+ if(target.status==="before")msg.textContent="Program dimulai Senin, 5 Oktober 2026.";
+ else if(target.status==="after")msg.textContent="Program 12 pekan telah selesai. Pilih pekan bacaan di bawah untuk membuka materi.";
+ else if(target.status==="outline")msg.textContent=`Hari ini persiapan untuk Pekan Bacaan ${target.week}. Pilih Garis Besar pada pekan tersebut di bawah.`;
+ else msg.textContent=`Bacaan hari ini: ${DAYS[target.day]}, Pekan Bacaan ${target.week}. Pilih ${DAYS[target.day]} pada daftar di bawah.`;
+}
+function renderWeek(week){
+ currentWeek=Number(week); weekSelect.value=String(currentWeek); $("#weekHeading").textContent=`Pekan Bacaan ${currentWeek}`; $("#weekPill").textContent=`${String(currentWeek).padStart(2,"0")} / ${WEEKS}`;
+ $("#garisButton").dataset.week=String(currentWeek); dayGrid.replaceChildren();
+ DAYS.forEach((day,i)=>{const b=document.createElement("button"); b.type="button"; b.className="day-card"; b.dataset.day=String(i); b.innerHTML=`<span class="day-number">${String(i+1).padStart(2,"0")}</span><strong>${day}</strong><small>Bacaan harian</small>`; dayGrid.appendChild(b);});
+}
+function applyZoom(){articleContent.style.fontSize=`${16*readingZoom/100}px`;articleContent.style.lineHeight=readingZoom>=140?"1.95":"1.75";$("#zoomPercent").textContent=`${readingZoom}%`;$("#zoomOut").disabled=readingZoom<=80;$("#zoomIn").disabled=readingZoom>=180;}
+function openReading(kind,week,day=null){
+ const n=Number(week), title=kind==="outline"?"Garis Besar":DAYS[Number(day)];
+ $("#readingWeekLabel").textContent=`Pekan ${n}`;$("#readingKicker").textContent=`PEKAN BACAAN ${n}`;$("#readingTitle").textContent=title;
+ articleContent.innerHTML=`<div class="notice-panel"><strong>Materi belum tersedia</strong><p>Bagian ini disiapkan untuk Pekan Bacaan ${n} — ${title}.</p><p>Naskah dan audio asli belum dimasukkan. Isi buku tidak dikarang agar tetap sesuai sumber.</p></div>`;
+ $("#mediaArea").replaceChildren();readingZoom=100;applyZoom();homeView.hidden=true;listView.hidden=true;readingView.hidden=false;window.scrollTo(0,0);
+}
+function back(){readingView.hidden=true;homeView.hidden=false;listView.hidden=false;window.scrollTo(0,0);}
+for(let i=1;i<=WEEKS;i++){const o=document.createElement("option");o.value=String(i);o.textContent=`Pekan Bacaan ${i}`;weekSelect.appendChild(o);}
+renderWeek(1);updateToday();weekSelect.addEventListener("change",()=>renderWeek(weekSelect.value));
+$("#garisButton").addEventListener("click",()=>openReading("outline",currentWeek));
+dayGrid.addEventListener("click",e=>{const b=e.target.closest("button.day-card");if(b)openReading("day",currentWeek,b.dataset.day);});
+$("#backButton").addEventListener("click",back);
+$("#zoomOut").addEventListener("click",()=>{readingZoom=Math.max(80,readingZoom-10);applyZoom();});
+$("#zoomIn").addEventListener("click",()=>{readingZoom=Math.min(180,readingZoom+10);applyZoom();});
+$("#zoomReset").addEventListener("click",()=>{readingZoom=100;applyZoom();});
+const t=todayTarget();if(t.week&&t.week<=WEEKS)renderWeek(t.week);
 })();
