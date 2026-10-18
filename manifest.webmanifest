@@ -1,0 +1,11 @@
+{
+  "name": "Kaum Beriman (1)",
+  "short_name": "Kaum Beriman",
+  "description": "Bacaan harian Kaum Beriman (1)",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8f4",
+  "theme_color": "#234b37",
+  "icons": []
+}
