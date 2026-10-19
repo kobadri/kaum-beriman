@@ -1,32 +1,41 @@
 # Supabase backend — Penyegaran Pagi FKKP
 
-GitHub Pages can host the static PWA but cannot run a private database or secure server code. Supabase is the proposed backend for the database, admin authentication, and media storage.
+GitHub Pages hosts the static PWA; Supabase provides PostgreSQL, Auth, and Storage. The repository contains the integration code, but no live Supabase project is created or connected yet.
 
-## Current status
+## 1. Create the Supabase project
 
-The repository now includes the database schema in `schema.sql`. The live Supabase project has **not** been created or connected yet. Until a project is connected, admin edits remain browser-local and are not shared with visitors.
+1. Open https://supabase.com/dashboard and create a project.
+2. In **SQL Editor**, run the full contents of [schema.sql](./schema.sql).
+3. Open the project's **Connect** dialog or **Settings → API Keys** and copy the Project URL and **publishable key** (or legacy anon public key).
+4. Edit `supabase-config.js` in the repository and replace `YOUR-PROJECT-REF` and `YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY` with those values. The publishable/anon key is intended for the browser only when RLS is enabled.
+5. Never put a `service_role` or secret key in HTML, JavaScript, GitHub, or chat.
 
-## Setup
+## 2. Create an admin account securely
 
-1. Create a project at https://supabase.com/dashboard.
-2. Open **SQL Editor**, create a query, paste all of `supabase/schema.sql`, and run it.
-3. Open **Project Settings → API** (or the project's API settings page) and copy the Project URL and the **publishable/anon public key**.
-4. Do not put a `service_role` or secret key in any HTML or JavaScript file. The browser must only use the public key; row-level security policies protect the data.
-5. Create the first admin user in Supabase Authentication. Then, from a trusted administrative environment, set that user's **app_metadata** to include `{ "role": "admin" }`. Do not use user-editable `user_metadata` for authorization. Never publish an admin/service key in this repository.
-6. Configure the client integration in a subsequent step using the Project URL and public key. No credentials are needed in this schema file.
+1. In Supabase **Authentication → Users**, create the admin user.
+2. Set the user's **app_metadata** to include `{ "role": "admin" }` using a trusted administrative mechanism. Do not use user-editable `user_metadata` for authorization. The browser editor checks this role and database RLS independently enforces it.
+3. Open `/admin.html`, sign in with the admin email and password.
+4. If the user lacks the role, the editor signs out and refuses access.
 
-## Database model
+Do not share admin passwords or secret keys.
 
-- One row per week/section: 12 weeks × 7 sections (Garis Besar + Senin–Sabtu).
-- `status`: `draft`, `ready`, or `published`.
-- Public visitors can read only rows marked `published`.
-- Only authenticated users with `app_metadata.role = admin` can edit any rows or upload/delete media.
-- The public `reading-media` bucket is for content intended for all visitors. Do not upload private or confidential files.
+## 3. Publish and store content
 
-## GitHub Pages
+- Each material is one row in `reading_materials`: 12 weeks × 7 sections (Garis Besar + Senin–Sabtu).
+- Save as **Draf**, **Siap ditinjau**, or **Terbit**. Only published materials are visible on the public home page.
+- PDF, audio, and video files upload to the `reading-media` bucket; the database stores their public URLs.
+- The configured bucket is public because these materials are intended for all visitors. Do not upload confidential files.
+- Upload limit is 100 MB per file. The current editor accepts PDF, audio, MP4, and WebM.
+- Content is sanitized on the public page before rendering. Still only paste trusted source material.
 
-Enable Pages for this repository under **Settings → Pages**, using the `main` branch and `/(root)` if that is the selected deployment method. The application URL is typically `https://kobadri.github.io/kaum-beriman/`, but confirm the exact URL shown in the Pages settings.
+## 4. GitHub Pages
 
-## Important
+Enable Pages under repository **Settings → Pages**, selecting the `main` branch and `/(root)` if using branch deployment. The typical project URL is `https://kobadri.github.io/kaum-beriman/`; use the URL shown in GitHub Pages settings.
 
-This setup is a backend foundation, not a claim that the site is already connected. After the Supabase project is created and the SQL runs successfully, wire the browser client, login/logout, material loading/saving, publication status, and media uploads. Keep all published source text faithful to the supplied FKKP materials; do not invent missing readings.
+If you use Supabase Auth redirect allow-lists, add the actual GitHub Pages URL (and local test URL if needed) in Supabase **Authentication → URL Configuration**. The app uses email/password authentication and does not require an OAuth callback for this login flow.
+
+## Current limitations
+
+- Backend connection cannot be verified until you create the Supabase project, run the SQL, and configure the public URL/key.
+- This setup does not fabricate FKKP source text; no original reading/audio files were found in `media/` during repository inspection.
+- Public visits/analytics are not recorded yet.
