@@ -3,6 +3,8 @@
 const DAYS=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"], START=new Date(2026,9,5), WEEKS=12;
 const $=s=>document.querySelector(s), weekSelect=$("#weekSelect"), dayGrid=$("#dayGrid"), homeView=$("#homeView"), listView=$("#listView"), readingView=$("#readingView"), articleContent=$("#articleContent");
 let currentWeek=1, readingZoom=100;
+let publishedMaterials={};
+fetch("./materials.json").then(r=>r.ok?r.json():{}).then(data=>{publishedMaterials=data||{};}).catch(()=>{});
 const midnight=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
 const diff=(a,b)=>Math.round((midnight(a)-midnight(b))/86400000);
 const formatDate=d=>new Intl.DateTimeFormat("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"}).format(d);
@@ -29,8 +31,16 @@ function applyZoom(){articleContent.style.fontSize=`${16*readingZoom/100}px`;art
 function openReading(kind,week,day=null){
  const n=Number(week), title=kind==="outline"?"Garis Besar":DAYS[Number(day)];
  $("#readingWeekLabel").textContent=`Pekan ${n}`;$("#readingKicker").textContent=`PEKAN BACAAN ${n}`;$("#readingTitle").textContent=title;
- articleContent.innerHTML=`<div class="notice-panel"><strong>Materi belum tersedia</strong><p>Bagian ini disiapkan untuk Pekan Bacaan ${n} — ${title}.</p><p>Naskah dan audio asli belum dimasukkan. Isi buku tidak dikarang agar tetap sesuai sumber.</p></div>`;
- $("#mediaArea").replaceChildren();readingZoom=100;applyZoom();homeView.hidden=true;listView.hidden=true;readingView.hidden=false;window.scrollTo(0,0);
+ const materialKey=kind==="outline"?`${n}-outline`:`${n}-${KEYS[Number(day)]}`;
+ const item=publishedMaterials[materialKey];
+ if(item&&item.content){articleContent.innerHTML=item.content;}else{articleContent.innerHTML=`<div class="notice-panel"><strong>Materi belum tersedia</strong><p>Bagian ini disiapkan untuk Pekan Bacaan ${n} — ${title}.</p><p>Naskah dan audio asli belum dimasukkan. Isi buku tidak dikarang agar tetap sesuai sumber.</p></div>`;}
+ const mediaArea=$("#mediaArea");mediaArea.replaceChildren();
+ if(item){for(const [key,label] of [["pdf","Unduh PDF"],["audio","Unduh MP3"],["video","Unduh MP4"]]){if(item[key]){const a=document.createElement("a");a.className="download-button";a.href=item[key];a.download="";a.textContent=label;mediaArea.appendChild(a);}}}
+ const actions=$("#downloadActions");actions.replaceChildren();
+ if(item){for(const [key,label] of [["pdf","Unduh PDF"],["audio","Unduh MP3"],["video","Unduh MP4"]]){if(item[key]){const a=document.createElement("a");a.className="download-button";a.href=item[key];a.download="";a.textContent=label;actions.appendChild(a);}}}
+ const shareUrl=window.location.href.split("#")[0]+`#${materialKey}`;
+ $("#shareWhatsApp").href="https://wa.me/?text="+encodeURIComponent(title+" — Pekan "+n+"\n"+shareUrl);
+ readingZoom=100;applyZoom();homeView.hidden=true;listView.hidden=true;readingView.hidden=false;window.scrollTo(0,0);
 }
 function back(){readingView.hidden=true;homeView.hidden=false;listView.hidden=false;window.scrollTo(0,0);}
 for(let i=1;i<=WEEKS;i++){const o=document.createElement("option");o.value=String(i);o.textContent=`Pekan Bacaan ${i}`;weekSelect.appendChild(o);}
