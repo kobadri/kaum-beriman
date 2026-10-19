@@ -1,6 +1,6 @@
 (() => {
 "use strict";
-const DAYS=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"], START=new Date(2026,9,5), WEEKS=12;
+const DAYS=["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu"], KEYS=["monday","tuesday","wednesday","thursday","friday","saturday"], START=new Date(2026,9,5), WEEKS=12;
 const $=s=>document.querySelector(s), weekSelect=$("#weekSelect"), dayGrid=$("#dayGrid"), homeView=$("#homeView"), listView=$("#listView"), readingView=$("#readingView"), articleContent=$("#articleContent");
 let currentWeek=1, readingZoom=100;
 let publishedMaterials={};
