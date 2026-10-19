@@ -110,7 +110,7 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values (
   'reading-media',
   'reading-media',
-  true,
+  false,
   104857600,
   array[
     'text/plain', 'text/markdown', 'text/html', 'application/xhtml+xml',
