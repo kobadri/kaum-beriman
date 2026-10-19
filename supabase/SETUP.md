@@ -6,7 +6,7 @@ GitHub Pages hosts the static PWA; Supabase provides PostgreSQL, Auth, and Stora
 
 1. Open https://supabase.com/dashboard and create a project. Save the database password somewhere safe; do not send it in chat.
 2. In the new project's **SQL Editor**, run the full contents of [schema.sql](./schema.sql).
-3. Then run the full contents of [the multi-book migration](./migrations/20261019_multi_book_support.sql). This adds a book catalog, connects existing material/file records to the existing *Kaum Beriman (1)* program, and preserves prior records and Storage objects. Do not skip this migration when setting up a new project.
+3. **Wait before running the multi-book migration.** The migration file is staged at [migrations/20261019_multi_book_support.sql](./migrations/20261019_multi_book_support.sql), but the public and admin screens must first be updated to select and manage books. Do not run that migration yet; applying it before the screen update would make the current single-book editor incompatible with the new database constraints. Once the screen update is committed, follow the updated instructions here.
 4. Open the project's **Connect** dialog or **Settings → API Keys** and copy the **Project URL** and **publishable key** (or legacy anon public key).
 5. In the repository root (the same level as `index.html` and `app.js`), create a file named exactly `supabase-config.js`. Copy the template from [config.example.js](./config.example.js) and replace its two placeholder values:
    - `url`: your Project URL
@@ -57,4 +57,4 @@ In Supabase **Authentication → URL Configuration**, add the actual GitHub Page
 
 ## Current limitations
 
-The database migration creates the data model for multiple books, but the existing public and admin screens still need the corresponding book selector and book-management interface before the multi-book workflow is fully usable. The backend cannot be verified until a Supabase project is created, both SQL files are run successfully, and the root `supabase-config.js` file contains the correct public URL/key.
+The multi-book SQL migration is prepared but must not be run until the book selector and book-management interface are committed and these instructions are updated. The backend cannot be verified until a Supabase project is created, the required SQL files are run successfully, and the root `supabase-config.js` file contains the correct public URL/key.
