@@ -1,0 +1,10 @@
+{
+  "_readme": "Daftar materi terbit. Setiap kunci berbentuk pekan-outline atau pekan-monday/tuesday/wednesday/thursday/friday/saturday. Isi content adalah HTML; pdf/audio/video adalah URL berkas yang sudah diunggah ke penyimpanan publik.",
+  "_example": {
+    "title": "Judul bacaan",
+    "content": "<p>Isi bacaan yang telah diperiksa.</p>",
+    "pdf": "",
+    "audio": "",
+    "video": ""
+  }
+}
