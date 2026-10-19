@@ -64,7 +64,7 @@ create table if not exists public.reading_assets (
   original_name text not null,
   stored_name text not null,
   storage_path text not null unique,
-  public_url text not null,
+  public_url text,
   mime_type text not null,
   size_bytes bigint not null check (size_bytes >= 0 and size_bytes <= 104857600),
   status text not null default 'draft' check (status in ('draft', 'ready', 'published')),
@@ -129,7 +129,19 @@ on conflict (id) do update set
 drop policy if exists "Anyone can view published media files" on storage.objects;
 create policy "Anyone can view published media files"
   on storage.objects for select to anon, authenticated
-  using (bucket_id = 'reading-media');
+  using (
+    bucket_id = 'reading-media'
+    and exists (
+      select 1 from public.reading_assets ra
+      where ra.storage_path = storage.objects.name
+        and ra.status = 'published'
+    )
+  );
+
+drop policy if exists "Admins can read all reading media" on storage.objects;
+create policy "Admins can read all reading media"
+  on storage.objects for select to authenticated
+  using (bucket_id = 'reading-media' and (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
 drop policy if exists "Admins can upload reading media" on storage.objects;
 create policy "Admins can upload reading media"
