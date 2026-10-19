@@ -30,9 +30,9 @@ function openReading(kind,week,day=null){
  const n=Number(week), title=kind==="outline"?"Garis Besar":DAYS[Number(day)];
  $("#readingWeekLabel").textContent=`Pekan ${n}`;$("#readingKicker").textContent=`PEKAN BACAAN ${n}`;$("#readingTitle").textContent=title;
  articleContent.innerHTML=`<div class="notice-panel"><strong>Materi belum tersedia</strong><p>Bagian ini disiapkan untuk Pekan Bacaan ${n} — ${title}.</p><p>Naskah dan audio asli belum dimasukkan. Isi buku tidak dikarang agar tetap sesuai sumber.</p></div>`;
- $("#mediaArea").replaceChildren();readingZoom=100;applyZoom();homeView.hidden=true;listView.hidden=true;readingView.hidden=false;window.scrollTo(0,0);
+ $("#mediaArea").replaceChildren();readingZoom=100;applyZoom();homeView.hidden=true;listView.hidden=true;readingView.hidden=false;document.title=`${title} — Pekan ${n} | Penyegaran Pagi - FKKP`;window.scrollTo(0,0);
 }
-function back(){readingView.hidden=true;homeView.hidden=false;listView.hidden=false;window.scrollTo(0,0);}
+function back(){readingView.hidden=true;homeView.hidden=false;listView.hidden=false;document.title="Penyegaran Pagi - FKKP";window.scrollTo(0,0);}
 for(let i=1;i<=WEEKS;i++){const o=document.createElement("option");o.value=String(i);o.textContent=`Pekan Bacaan ${i}`;weekSelect.appendChild(o);}
 renderWeek(1);updateToday();weekSelect.addEventListener("change",()=>renderWeek(weekSelect.value));
 $("#garisButton").addEventListener("click",()=>openReading("outline",currentWeek));
@@ -41,5 +41,8 @@ $("#backButton").addEventListener("click",back);
 $("#zoomOut").addEventListener("click",()=>{readingZoom=Math.max(80,readingZoom-10);applyZoom();});
 $("#zoomIn").addEventListener("click",()=>{readingZoom=Math.min(180,readingZoom+10);applyZoom();});
 $("#zoomReset").addEventListener("click",()=>{readingZoom=100;applyZoom();});
+$("#downloadPdf").addEventListener("click",()=>window.print());
+window.addEventListener("afterprint",()=>{document.title="Penyegaran Pagi - FKKP";});
 const t=todayTarget();if(t.week&&t.week<=WEEKS)renderWeek(t.week);
+if("serviceWorker" in navigator && location.protocol!=="file:"){window.addEventListener("load",()=>navigator.serviceWorker.register("./service-worker.js").catch(err=>console.warn("PWA offline belum aktif:",err)));}
 })();
