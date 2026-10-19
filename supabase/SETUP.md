@@ -13,7 +13,15 @@ GitHub Pages hosts the static PWA; Supabase provides PostgreSQL, Auth, and Stora
 ## 2. Create an admin account securely
 
 1. In Supabase **Authentication → Users**, create the admin user.
-2. Set the user's **app_metadata** to include `{ "role": "admin" }` using a trusted administrative mechanism. Do not use user-editable `user_metadata` for authorization. The browser editor checks this role and database RLS independently enforces it.
+2. Set the user's **app_metadata** to include `{ "role": "admin" }`. In the Supabase SQL Editor, run this after replacing the email with the exact admin account email:
+
+```sql
+update auth.users
+set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb) || '{"role":"admin"}'::jsonb
+where email = 'admin@example.com';
+```
+
+Check that exactly one row was updated. Do not use user-editable `user_metadata` for authorization. The browser editor checks this role and database RLS independently enforces it. After changing app metadata, sign out and sign in again so the session token is refreshed.
 3. Open `/admin.html`, sign in with the admin email and password.
 4. If the user lacks the role, the editor signs out and refuses access.
 
