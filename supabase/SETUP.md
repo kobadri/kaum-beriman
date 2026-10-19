@@ -32,7 +32,7 @@ Do not share admin passwords or secret keys.
 - Each material is one row in `reading_materials`: 12 weeks × 7 sections (Garis Besar + Senin–Sabtu).
 - Save as **Draf**, **Siap ditinjau**, or **Terbit**. Only published materials are visible on the public home page.
 - New files must be uploaded through the Admin **Pusat unggah file**. First select week, day/section and type (text, audio or video); the date is calculated from the program start date, and the app generates a folder pattern and collision-resistant filename. The `reading_assets` table records original name, generated name, date, type, status, path and public URL. Files upload to the `reading-media` bucket.
-- The configured bucket is public because these materials are intended for all visitors. Do not upload confidential files.
+- The `reading-media` bucket is private. Only administrators can access drafts; published assets receive temporary signed links (valid for one hour) when a reader opens the app. Do not upload confidential personal files.
 - Upload limit is 100 MB per file. Text/document accepts TXT, Markdown, PDF, DOC, DOCX, RTF, ODT and HTML; audio accepts MP3, M4A, AAC, OGG and WAV; video accepts MP4 and WebM. Executables and arbitrary binary files are intentionally not accepted.
 - Content is sanitized on the public page before rendering. Still only paste trusted source material.
 
