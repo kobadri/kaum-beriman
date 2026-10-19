@@ -31,9 +31,9 @@ Do not share admin passwords or secret keys.
 
 - Each material is one row in `reading_materials`: 12 weeks × 7 sections (Garis Besar + Senin–Sabtu).
 - Save as **Draf**, **Siap ditinjau**, or **Terbit**. Only published materials are visible on the public home page.
-- PDF, audio, and video files upload to the `reading-media` bucket; the database stores their public URLs.
+- New files must be uploaded through the Admin **Pusat unggah file**. First select week, day/section and type (text, audio or video); the date is calculated from the program start date, and the app generates a folder pattern and collision-resistant filename. The `reading_assets` table records original name, generated name, date, type, status, path and public URL. Files upload to the `reading-media` bucket.
 - The configured bucket is public because these materials are intended for all visitors. Do not upload confidential files.
-- Upload limit is 100 MB per file. The current editor accepts PDF, audio, MP4, and WebM.
+- Upload limit is 100 MB per file. Text/document accepts TXT, Markdown, PDF, DOC, DOCX, RTF, ODT and HTML; audio accepts MP3, M4A, AAC, OGG and WAV; video accepts MP4 and WebM. Executables and arbitrary binary files are intentionally not accepted.
 - Content is sanitized on the public page before rendering. Still only paste trusted source material.
 
 ## 4. GitHub Pages
@@ -45,5 +45,5 @@ If you use Supabase Auth redirect allow-lists, add the actual GitHub Pages URL (
 ## Current limitations
 
 - Backend connection cannot be verified until you create the Supabase project, run the SQL, and configure the public URL/key.
-- This setup does not fabricate FKKP source text; no original reading/audio files were found in `media/` during repository inspection.
+- Directly adding files to GitHub manually bypasses the Admin upload workflow. For consistent metadata and automatic naming, use Admin Pusat unggah; files committed directly to the repository will not automatically be registered in `reading_assets`.
 - Public visits/analytics are not recorded yet.
