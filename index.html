@@ -8,11 +8,12 @@
 <main class="page">
 <section class="welcome" id="homeView"><p class="eyebrow">PROGRAM 12 PEKAN</p><h2>Penyegaran Pagi - FKKP</h2><p class="intro">Pilih pekan bacaan, lalu buka Garis Besar atau bacaan harian.</p>
 <p class="today-notice"><strong>Hari Ini</strong> — <span id="todayDate">Memuat tanggal…</span></p><p class="today-message" id="todayMessage" aria-live="polite"></p>
-<div class="week-select"><label for="weekSelect">Pekan bacaan</label><select id="weekSelect" aria-label="Pilih pekan bacaan"></select></div></section>
+<div class="week-select"><label for="weekSelect">Pekan bacaan</label><select id="weekSelect" aria-label="Pilih pekan bacaan"></select></div><p id="backendStatus" class="today-message" role="status">Materi online akan tersedia setelah backend dikonfigurasi.</p></section>
 <section class="reading-section" id="listView"><div class="section-heading"><div><p class="eyebrow">MATERI PEKAN INI</p><h2 id="weekHeading">Pekan Bacaan 1</h2></div><span class="week-pill" id="weekPill">01 / 12</span></div>
 <button class="outline-card garis-card" id="garisButton" type="button"><span class="book-icon" aria-hidden="true">✦</span><span class="card-copy"><strong>Garis Besar</strong><small>Persiapan bacaan Senin–Sabtu</small></span><span class="chevron" aria-hidden="true">›</span></button><div class="day-grid" id="dayGrid"></div></section>
 <section class="reading-view" id="readingView" hidden aria-live="polite"><div class="reading-top"><button id="backButton" class="back-button" type="button">← Semua bacaan</button><span class="week-pill" id="readingWeekLabel">Pekan 1</span></div>
 <div class="reading-title-row"><div><p class="eyebrow" id="readingKicker">PEKAN BACAAN 1</p><h2 id="readingTitle">Garis Besar</h2></div><div class="zoom-controls" aria-label="Ukuran teks bacaan"><button id="zoomOut" type="button" aria-label="Perkecil teks">A−</button><span id="zoomPercent" aria-live="polite">100%</span><button id="zoomIn" type="button" aria-label="Perbesar teks">A+</button><button id="zoomReset" type="button">Reset</button></div></div>
 <div class="article-content" id="articleContent"><p>Materi untuk bagian ini belum diterbitkan.</p></div><div class="media-area" id="mediaArea"></div>
 <div class="reading-actions"><button id="downloadPdf" class="pdf-button" type="button">Unduh / Cetak PDF</button><p>Gunakan pilihan “Simpan sebagai PDF” pada dialog cetak browser.</p></div></section>
-<footer><span>Penyegaran Pagi - FKKP</span><span>12 pekan · Senin–Sabtu + Garis Besar</span></footer></main><script src="./app.js"></script></body></html>
+<footer><span>Penyegaran Pagi - FKKP</span><span>12 pekan · Senin–Sabtu + Garis Besar</span></footer></main>
+<script src="./supabase-config.js"></script><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./app.js"></script></body></html>
