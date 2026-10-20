@@ -118,7 +118,7 @@
 
     <div class="content-section">
       <div class="date-info">
-        📅 Senin, 5 Oktober 2026<br>
+        📅 <span id="current-date"></span><br>
         <span style="font-size: 0.8rem; font-weight: normal; opacity: 0.8;">Saatnya membaca Firman Tuhan</span>
       </div>
 
@@ -146,6 +146,19 @@
   </div>
 
 
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const today = new Date();
+    const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+    const formattedDate = today.toLocaleDateString("id-ID", options);
+    const dateEl = document.getElementById("current-date");
+    if (dateEl) {
+      dateEl.textContent = formattedDate;
+    }
+  });
+</script>
 </body>
+
 
 </html>
