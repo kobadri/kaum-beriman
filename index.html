@@ -147,18 +147,44 @@
 
 
 
+
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const today = new Date();
     const options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
-    const formattedDate = today.toLocaleDateString("id-ID", options);
     const dateEl = document.getElementById("current-date");
     if (dateEl) {
-      dateEl.textContent = formattedDate;
+      dateEl.textContent = today.toLocaleDateString("id-ID", options);
     }
+
+    const startDate = new Date(2026, 9, 5);
+    const diffTime = today - startDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    let weekNum = Math.floor(diffDays / 7) + 1;
+    let dayNum = (diffDays % 7) + 1;
+    
+    if (weekNum < 1) weekNum = 1;
+    if (dayNum < 1) dayNum = 1;
+    if (dayNum > 6) dayNum = 6;
+
+    const dayNames = ["senin", "selasa", "rabu", "kamis", "jumat", "sabtu", "sabtu"];
+    const dayStr = dayNames[Math.min(dayNum - 1, 5)];
+    const weekPad = String(weekNum).padStart(2, "0");
+    const dayPad = String(dayNum).padStart(2, "0");
+
+    const targetFile = `t_${weekPad}_${dayStr}_${dayPad}.html`;
+
+    const links = document.querySelectorAll("a");
+    links.forEach(link => {
+      if (link.textContent.includes("Hari Ini") || link.innerHTML.includes("Hari Ini")) {
+        link.href = targetFile;
+      }
+    });
   });
 </script>
 </body>
+
 
 
 </html>
