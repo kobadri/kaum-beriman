@@ -35,7 +35,7 @@ for filepath in files:
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Buat blok tombol navigasi baru yang bersih
+    # Buat blok tombol navigasi baru
     nav_buttons = '\n<div class="nav-container" style="margin: 30px 0; text-align: center; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap;">\n'
     nav_buttons += '  <a href="index.html" class="btn" style="background: #333; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Home</a>\n'
     
@@ -51,15 +51,17 @@ for filepath in files:
         
     nav_buttons += '</div>\n'
 
-    # Bersihkan tombol lama (flex/div navigasi lama sebelum </body>) jika ada
-    # Kita hapus elemen tombol lama atau pastikan diletakkan tepat sebelum </body>
-    if '<div class="nav-container"' in content:
-        content = re.sub(r'<div class="nav-container"[\s\S]*?</div>', nav_buttons, content)
-    else:
-        # Jika ada tombol statis lama, kita coba bersihkan atau langsung sisipkan sebelum </body>
+    # Hapus kontainer tombol navigasi lama (baik div class nav-container atau div yang membungkus tombol Garis Besar/Pendalaman)
+    content = re.sub(r'<div class="nav-container"[\s\S]*?</div>', '', content)
+    content = re.sub(r'<div[^>]*style="[^"]*display:\s*flex[^"]*"[\s\S]*?Garis Besar[\s\S]*?</div>', '', content)
+    
+    # Masukkan tombol baru tepat sebelum </body>
+    if "</body>" in content:
         content = content.replace("</body>", f"{nav_buttons}\n</body>")
+    else:
+        content += nav_buttons
 
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(content)
 
-print("Pembaruan total struktur tombol selesai!")
+print("Pembaruan bersih selesai!")
